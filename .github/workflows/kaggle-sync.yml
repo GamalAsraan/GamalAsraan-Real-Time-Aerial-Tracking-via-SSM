@@ -5,7 +5,10 @@ on:
     # Runs at 00:00 UTC every day
     - cron: '0 0 * * *'
   workflow_dispatch: # for manually testing
-
+  
+permissions:
+  contents: write
+  
 jobs:
   sync-notebook:
     runs-on: ubuntu-latest
