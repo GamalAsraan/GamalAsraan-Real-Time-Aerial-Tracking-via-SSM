@@ -1,0 +1,46 @@
+name: Nightly Kaggle Notebook Sync
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch: # for manually testing
+
+jobs:
+  sync-notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Kaggle API
+        run: pip install kaggle
+
+      - name: Pull Latest Kaggle Notebook
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          # Pulls your specific notebook into a folder named "notebooks"
+          kaggle kernels pull gamalasran/real-time-aerial-tracking-via-state-space-model -p ./notebooks -m
+
+      - name: Check for changes and Commit
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if the notebook directory actually changed
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .
+            
+            # Commit with dynamic date formatting
+            git commit -m "Automated sync: Updates from Kaggle on $(date +'%Y-%m-%d')"
+            git push
+          else
+            echo "No changes detected in the Kaggle notebook."
+          fi
