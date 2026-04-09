@@ -30,7 +30,7 @@ jobs:
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         run: |
           # Pulls your specific notebook into a folder named "notebooks"
-          kaggle kernels pull gamalasran/real-time-aerial-tracking-via-state-space-model -p ./notebooks -m
+          kaggle kernels pull gamalasran/real-time-aerial-tracking-via-state-space-model -p ./notebooks 
 
       - name: Check for changes and Commit
         run: |
